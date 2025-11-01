@@ -1,6 +1,18 @@
-# Dinesh Assistant: AI-Powered Chatbot with Web Interface
+# ConfigMaster Project with Dinesh Assistant
 
-A sophisticated Python-based chatbot system featuring both CLI and web interfaces, built with modern best practices and comprehensive test coverage.
+## Overview
+
+ConfigMaster is an enterprise-grade configuration management system featuring Dinesh Assistant, an advanced AI-powered chatbot that provides interactive help and documentation. This document provides a comprehensive guide to the project, its chatbot capabilities, and technical implementation.
+
+## Table of Contents
+
+- [Quick Links](#quick-links)
+- [New Documentation](#new-documentation)
+  - [Chatbot Documentation](docs/CHATBOT.md) - Detailed guide for Dinesh Assistant
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [Usage](#usage)
+- [Development](#development)
 
 ## System Architecture
 

@@ -10,7 +10,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 
-from src.chatbot import DineshAssistant
+from ..chatbot import DineshAssistant
 
 # Initialize FastAPI app
 app = FastAPI(title="Dinesh Assistant")
@@ -71,7 +71,38 @@ async def chat(request: ChatRequest) -> Dict:
 
 
 def start() -> None:
-    """Start the web UI server."""
+    """Start the web UI server with graceful shutdown."""
+    import signal
+    import sys
+
     import uvicorn
 
-    uvicorn.run("src.web.app:app", host="127.0.0.1", port=8000, reload=True)
+    def handle_exit(signum, frame):
+        print("\nReceived signal to terminate. Shutting down gracefully...")
+        sys.exit(0)
+
+    # Register signal handlers for graceful shutdown
+    signal.signal(signal.SIGINT, handle_exit)  # Handles Ctrl+C
+    signal.signal(signal.SIGTERM, handle_exit)  # Handles termination request
+
+    config = uvicorn.Config(
+        "src.web.app:app",
+        host="127.0.0.1",
+        port=8000,
+        reload=True,
+        reload_delay=1.0,
+        log_level="info",
+        access_log=True,
+        workers=1,
+    )
+
+    server = uvicorn.Server(config)
+    print("\n🤖 Dinesh Assistant is now running permanently!")
+    print("🌐 Access the web interface at: http://localhost:8000")
+    print("⌨️  Press Ctrl+C to stop the server when needed\n")
+
+    try:
+        server.run()
+    except KeyboardInterrupt:
+        print("\n👋 Dinesh Assistant is shutting down. Thanks for chatting!")
+        sys.exit(0)

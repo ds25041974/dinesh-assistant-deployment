@@ -6,9 +6,12 @@ build-backend = "hatchling.build"
 name = "github-projectr"
 version = "0.1.0"
 authors = [
-  { name = "Your Name", email = "your.email@example.com" },
+  { name = "Dinesh Srivastava", email = "dineshsrivastava@example.com" },
 ]
-description = "A Python project"
+description = "A Python project for ConfigMaster with web interface"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [

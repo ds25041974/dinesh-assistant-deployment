@@ -29,18 +29,40 @@ class DineshAssistant:
         self._context: Dict[str, Any] = {}
 
     def greet(self) -> str:
-        """Get chatbot greeting."""
-        return (
-            f"Hello! I'm {self.name}, your personal assistant for the ConfigMaster "
-            "project. I can help you with:\n"
-            "1. Project features and capabilities\n"
-            "2. Configuration management\n"
-            "3. Internationalization (i18n)\n"
-            "4. Template system\n"
-            "5. Validation framework\n"
-            "6. Testing and development\n"
-            "\nHow can I assist you today?"
-        )
+        """Get a warm and friendly greeting."""
+        import random
+
+        greetings = [
+            f"Hey there! 👋 I'm {self.name}, and I'm super excited to help you with the "
+            "ConfigMaster project! Here's what I can assist you with:\n\n"
+            "🚀 Project features and capabilities\n"
+            "⚙️ Configuration management\n"
+            "🌍 Internationalization (i18n)\n"
+            "📝 Template system\n"
+            "✅ Validation framework\n"
+            "🧪 Testing and development\n\n"
+            "What would you like to explore today? I'm all ears! 😊",
+            f"Hi! I'm {self.name}, your friendly guide to all things ConfigMaster! 🤗\n\n"
+            "I love helping with:\n"
+            "💫 Project features and cool capabilities\n"
+            "🔧 Configuration setup and management\n"
+            "🗣️ Internationalization (i18n)\n"
+            "🎨 Template system\n"
+            "🎯 Validation framework\n"
+            "🔬 Testing and development\n\n"
+            "What can I help you discover today?",
+            f"Welcome! 🌟 {self.name} here, ready to make your ConfigMaster journey awesome!\n\n"
+            "I'm your go-to expert for:\n"
+            "✨ Project features and capabilities\n"
+            "🛠️ Configuration management\n"
+            "🌐 Internationalization (i18n)\n"
+            "📋 Template system\n"
+            "✅ Validation framework\n"
+            "🧪 Testing and development\n\n"
+            "Got questions? I've got answers! Let's make something amazing together! 💪",
+        ]
+
+        return random.choice(greetings)
 
     async def respond(self, query: str) -> Response:
         """Generate response for user query."""
@@ -85,9 +107,16 @@ class DineshAssistant:
 
     def _generate_response(self, query: str, context: Dict[str, Any]) -> Response:
         """Generate response based on query and context."""
-        # Simple pattern matching for now
+        # Check for personality-based responses first
+        personality_response = self._get_personality_response(query)
+        if personality_response:
+            return personality_response
+
+        # Handle technical queries with context
         for pattern, response in context.get("patterns", {}).items():
             if re.search(pattern, query, re.I):
+                # Add some personality to technical responses
+                response = self._add_personality_to_response(response)
                 return Response(
                     text=response,
                     confidence=0.8,
@@ -95,7 +124,7 @@ class DineshAssistant:
                     references=context.get("references", []),
                 )
 
-        # Fallback response
+        # Friendly fallback response
         return Response(
             text=self._get_fallback_response(),
             confidence=0.2,
@@ -103,18 +132,96 @@ class DineshAssistant:
             references=[],
         )
 
+    def _add_personality_to_response(self, response: str) -> str:
+        """Add personality markers to technical responses."""
+        import random
+
+        # Random friendly intros
+        intros = [
+            "Great question! ",
+            "I'd be happy to help with that! ",
+            "Ah, let me explain! ",
+            "I love questions like this! ",
+            "Let me break this down for you! ",
+        ]
+
+        # Random encouraging closures
+        closures = [
+            "\n\nHope this helps! Let me know if you need any clarification! 😊",
+            "\n\nFeel free to ask if anything isn't clear! 👍",
+            "\n\nDoes this answer your question? I'm here if you need more details!",
+            "\n\nLet me know if you'd like to explore this topic further! 🚀",
+        ]
+
+        return f"{random.choice(intros)}{response}{random.choice(closures)}"
+
     def _update_context(self, query: str, response: Response) -> None:
         """Update conversation context."""
         self._context["last_query"] = query
         self._context["last_response"] = response
 
     def _get_fallback_response(self) -> str:
-        """Get fallback response when uncertain."""
-        return (
-            "I'm not quite sure about that. Could you rephrase your question? "
-            "You can ask me about project features, configuration, i18n, "
-            "templates, validation, or testing."
-        )
+        """Get friendly fallback response when uncertain."""
+        import random
+
+        responses = [
+            "Hmm, I'm not entirely sure I caught that right. 🤔 Mind rephrasing? "
+            "I'd love to help - you can ask me about project features, configuration, "
+            "i18n, templates, validation, or testing!",
+            "I want to make sure I give you the best answer, but I'm a bit unsure about "
+            "that one. 😅 Could you try asking in a different way? I'm great with topics "
+            "like project features, configuration, i18n, templates, and more!",
+            "Oops! I'm drawing a blank on that one! 🎯 Let's try a different approach - "
+            "I'm really good at helping with project features, configuration, i18n, "
+            "templates, validation, and testing. What would you like to know?",
+            "I feel like we're almost there, but I want to understand your question better! "
+            "💭 Can you rephrase that? I'm here to help with all sorts of things like "
+            "project features, configuration, and more!",
+        ]
+
+        return random.choice(responses)
+
+    def _get_personality_response(self, query: str) -> Optional[Response]:
+        """Generate personality-based responses for casual conversation."""
+        personality_patterns = {
+            r"(hi|hello|hey).*": [
+                "Hey there! 👋 Always great to chat with you!",
+                "Hi! Hope you're having a fantastic day!",
+                "Hello! I'm all ears - what's on your mind?",
+            ],
+            r"how are you.*": [
+                "I'm doing great, thanks for asking! Ready to help you out!",
+                "I'm feeling energized and ready to tackle any questions you have!",
+                "Pretty good! Even AI assistants have their good days 😊",
+            ],
+            r"thank.*": [
+                "You're welcome! Always happy to help! 😊",
+                "Anytime! That's what I'm here for!",
+                "No problem at all! Let me know if you need anything else!",
+            ],
+            r"bye|goodbye": [
+                "Take care! Come back anytime!",
+                "Bye for now! Looking forward to our next chat!",
+                "See you later! Don't be a stranger! 👋",
+            ],
+            r"(who|what).*you": [
+                "I'm Dinesh Assistant, your friendly AI companion! I specialize in helping with the ConfigMaster project, but I also enjoy casual chats!",
+                "Think of me as your tech-savvy friend who's always excited to help with ConfigMaster and chat about anything!",
+                "I'm an AI assistant with a passion for helping people and a knack for ConfigMaster details!",
+            ],
+        }
+
+        for pattern, responses in personality_patterns.items():
+            if re.search(pattern, query, re.I):
+                import random
+
+                return Response(
+                    text=random.choice(responses),
+                    confidence=0.9,
+                    context={"type": "personality"},
+                    references=[],
+                )
+        return None
 
     def _init_knowledge(self) -> Dict[str, Any]:
         """Initialize knowledge base."""
@@ -122,11 +229,12 @@ class DineshAssistant:
             "config": {
                 "patterns": {
                     r"how.*(configure|setup|set up)": (
-                        "To configure the project:\n"
-                        "1. Create a virtual environment\n"
-                        '2. Install with: pip install -e ".[dev]"\n'
-                        "3. Configure settings in config.json\n"
-                        "4. Run validation with: python -m src.main config validate"
+                        "Let me help you get started with the configuration! 😊\n\n"
+                        "Here's what you need to do:\n"
+                        "1. First, create a virtual environment (keeping things clean!)\n"
+                        '2. Run: pip install -e ".[dev]" (this gets all the good stuff)\n'
+                        "3. Set up your config.json (I can help with this!)\n"
+                        "4. Validate everything with: python -m src.main config validate"
                     ),
                     r"what.*(settings|config|properties)": (
                         "ConfigMaster supports:\n"

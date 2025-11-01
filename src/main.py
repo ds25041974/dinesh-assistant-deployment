@@ -271,13 +271,11 @@ def main() -> None:
             if args.web:
                 # Web UI mode
                 try:
-                    # Dynamically import FastAPI app to avoid import overhead when not using web mode
-                    import uvicorn
-
-                    from src.web.app import app
+                    # Start the web UI
+                    from src.web.app import start
 
                     print("Starting web UI on http://localhost:8000")
-                    uvicorn.run(app, host="0.0.0.0", port=8000)
+                    start()
                 except ImportError:
                     logger.error(
                         "Web UI dependencies not installed. Please install 'fastapi' and 'uvicorn'"
