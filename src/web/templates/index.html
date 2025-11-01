@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dinesh Assistant - ConfigMaster Project</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="chat-container">
+            <div class="chat-header">
+                <h1>Dinesh Assistant</h1>
+                <p>Your ConfigMaster Project Guide</p>
+            </div>
+            
+            <div class="chat-messages" id="chat-messages">
+                <!-- Messages will be added here dynamically -->
+            </div>
+            
+            <div class="typing-indicator" id="typing-indicator">
+                Dinesh Assistant is typing<span class="typing-dots"></span>
+            </div>
+            
+            <div class="chat-input">
+                <input type="text" id="user-input" placeholder="Ask me anything about the project..." 
+                       aria-label="Enter your message">
+                <button id="send-button" onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <template id="message-template">
+        <div class="message">
+            <div class="message-content"></div>
+            <div class="message-references"></div>
+        </div>
+    </template>
+
+    <script>
+        let isProcessing = false;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Show initial greeting
+            fetch('/api/greet')
+                .then(response => response.json())
+                .then(data => {
+                    addMessage(data.text, 'bot', data.references);
+                })
+                .catch(error => console.error('Error:', error));
+
+            // Handle Enter key in input
+            document.getElementById('user-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !isProcessing) {
+                    sendMessage();
+                }
+            });
+        });
+
+        async function sendMessage() {
+            if (isProcessing) return;
+
+            const input = document.getElementById('user-input');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Disable input and show processing state
+            isProcessing = true;
+            input.value = '';
+            input.disabled = true;
+            document.getElementById('send-button').disabled = true;
+            
+            // Add user message
+            addMessage(message, 'user');
+            
+            // Show typing indicator
+            document.getElementById('typing-indicator').classList.add('visible');
+            
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ query: message })
+                });
+                
+                const data = await response.json();
+                
+                // Hide typing indicator and add bot response
+                document.getElementById('typing-indicator').classList.remove('visible');
+                addMessage(data.text, 'bot', data.references);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                addMessage('Sorry, I encountered an error. Please try again.', 'bot');
+            } finally {
+                // Reset input state
+                isProcessing = false;
+                input.disabled = false;
+                document.getElementById('send-button').disabled = false;
+                input.focus();
+            }
+        }
+
+        function addMessage(text, type, references = []) {
+            const messagesDiv = document.getElementById('chat-messages');
+            const template = document.getElementById('message-template');
+            
+            const messageDiv = template.content.cloneNode(true).querySelector('.message');
+            messageDiv.classList.add(type === 'user' ? 'user-message' : 'bot-message');
+            
+            const contentDiv = messageDiv.querySelector('.message-content');
+            contentDiv.textContent = text;
+            
+            const referencesDiv = messageDiv.querySelector('.message-references');
+            if (references.length > 0) {
+                referencesDiv.innerHTML = '<strong>References:</strong><br>' + 
+                    references.map(ref => `- ${ref}`).join('<br>');
+            }
+            
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+    </script>
+</body>
+</html>

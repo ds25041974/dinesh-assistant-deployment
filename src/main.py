@@ -20,6 +20,7 @@ import logging
 import sys
 from typing import Optional
 
+from src.chatbot import DineshAssistant
 from src.config.i18n import Language, get_translation
 from src.config.settings import AppConfig
 from src.config.templates import TemplateCategory, TemplateManager
@@ -215,6 +216,15 @@ def main() -> None:
         config_parser.add_argument("action", choices=["view", "save", "validate"])
         config_parser.add_argument("--file", help="Config file path")
 
+        # Chatbot command
+        chat_parser = subparsers.add_parser(
+            "chat", help="Start Dinesh Assistant chatbot"
+        )
+        chat_parser.add_argument(
+            "--query", help="One-shot query mode instead of interactive"
+        )
+        chat_parser.add_argument("--web", action="store_true", help="Start web UI mode")
+
         args = parser.parse_args()
 
         if not args.command:
@@ -253,6 +263,63 @@ def main() -> None:
                     print(f"Configuration saved to {args.file}")
                 except IOError as e:
                     logger.error("Error saving config file: %s", e)
+                    sys.exit(1)
+            return
+
+        if args.command == "chat":
+            assistant = DineshAssistant()
+            if args.web:
+                # Web UI mode
+                try:
+                    # Dynamically import FastAPI app to avoid import overhead when not using web mode
+                    import uvicorn
+
+                    from src.web.app import app
+
+                    print("Starting web UI on http://localhost:8000")
+                    uvicorn.run(app, host="0.0.0.0", port=8000)
+                except ImportError:
+                    logger.error(
+                        "Web UI dependencies not installed. Please install 'fastapi' and 'uvicorn'"
+                    )
+                    sys.exit(1)
+                except Exception as e:
+                    logger.error("Web UI error: %s", e)
+                    sys.exit(1)
+            elif args.query:
+                # One-shot query mode
+                try:
+                    response = asyncio.run(assistant.respond(args.query))
+                    print(f"\n{response.text}")
+                    if response.references:
+                        print("\nReferences:")
+                        for ref in response.references:
+                            print(f"- {ref}")
+                except Exception as e:
+                    logger.error("Chat error: %s", e)
+                    sys.exit(1)
+            else:
+                # Interactive mode
+                print(assistant.greet())
+                try:
+                    while True:
+                        query = input("\nYou: ").strip()
+                        if not query:
+                            continue
+                        if query.lower() in ["exit", "quit", "bye"]:
+                            print("\nGoodbye! Have a great day!")
+                            break
+
+                        response = asyncio.run(assistant.respond(query))
+                        print(f"\nDinesh Assistant: {response.text}")
+                        if response.references:
+                            print("\nReferences:")
+                            for ref in response.references:
+                                print(f"- {ref}")
+                except KeyboardInterrupt:
+                    print("\nGoodbye! Have a great day!")
+                except Exception as e:
+                    logger.error("Chat error: %s", e)
                     sys.exit(1)
             return
 
