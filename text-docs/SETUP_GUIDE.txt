@@ -1,0 +1,72 @@
+# Setting Up Dinesh Assistant - Simple Steps
+
+BEFORE YOU START
+---------------
+You need:
+- A Mac computer
+- Python 3.8 or newer
+- Terminal app
+- Internet connection
+
+SETUP STEPS
+----------
+1. Get the Software:
+   - Open Terminal
+   - Copy the project files
+   - Go to the project folder
+
+2. Set Up Python:
+   - Create virtual environment
+   - Install required software
+   - Check everything works
+
+3. Make It Run Forever:
+   - Create startup script
+   - Set up automatic start
+   - Test it works
+
+QUICK START COMMANDS
+------------------
+Copy and paste these commands:
+
+1. First Time Setup:
+   python -m venv .venv
+   source .venv/bin/activate
+   pip install -e .
+
+2. Start the Service:
+   launchctl load ~/Library/LaunchAgents/com.dinesh.assistant.plist
+
+3. Check It's Working:
+   - Open: http://localhost:8000
+   - Should see the welcome page
+
+SOLVING PROBLEMS
+--------------
+If it's not working:
+
+1. Check Logs:
+   - Look in: ~/Library/Logs/dinesh-assistant.log
+   - Error log: ~/Library/Logs/dinesh-assistant.error.log
+
+2. Common Fixes:
+   - Restart the service
+   - Check Python is working
+   - Make sure port 8000 is free
+
+3. Get Help:
+   - Check the docs folder
+   - Run health check
+   - Ask the assistant
+
+KEEPING IT UPDATED
+----------------
+1. Get Updates:
+   - Run: git pull
+   - Run: pip install -e .
+   - Restart the service
+
+2. Check Status:
+   - Visit: http://localhost:8000/health
+   - Check the logs
+   - Monitor memory usage

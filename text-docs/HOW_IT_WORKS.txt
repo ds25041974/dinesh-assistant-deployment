@@ -1,0 +1,85 @@
+# How Dinesh Assistant Works - Simple Explanation
+
+WHAT'S INSIDE?
+-------------
+Think of Dinesh Assistant as having three main parts:
+
+1. The Brain (AI Part)
+   - Understands your questions
+   - Knows about coding
+   - Learns from project files
+   - Gives helpful answers
+
+2. The Body (Computer Part)
+   - Runs all the time
+   - Handles web requests
+   - Stores information
+   - Fixes itself if problems happen
+
+3. The Connections (Integration Part)
+   - Works with GitHub
+   - Updates automatically
+   - Saves changes
+   - Keeps logs
+
+HOW IT WORKS
+-----------
+1. When You Ask a Question:
+   - You type in browser or terminal
+   - Assistant understands your needs
+   - Looks up information
+   - Gives you an answer
+
+2. Behind the Scenes:
+   - Runs on your computer
+   - Stays active 24/7
+   - Keeps track of everything
+   - Handles errors automatically
+
+3. Staying Updated:
+   - Connects to GitHub
+   - Gets latest changes
+   - Updates itself
+   - Keeps logs
+
+SPECIAL FEATURES
+--------------
+1. Always On
+   - Starts with your computer
+   - Runs in background
+   - Fixes itself
+   - Easy to check status
+
+2. Smart Help
+   - Understands code
+   - Knows your project
+   - Gives examples
+   - Explains clearly
+
+3. Safe & Secure
+   - Runs locally
+   - Keeps logs
+   - Backs up data
+   - Easy to control
+
+TECHNICAL BITS (FOR DEVELOPERS)
+----------------------------
+- Uses FastAPI for web
+- Python 3.8+ based
+- LaunchAgent for stability
+- GitHub integration
+- Automatic error handling
+- Health monitoring
+- Resource management
+
+GETTING HELP
+-----------
+1. Quick Help:
+   - Visit: http://localhost:8000/help
+   - Check: http://localhost:8000/status
+   - View logs in Library folder
+
+2. More Information:
+   - Read the docs folder
+   - Ask in chat
+   - Check GitHub
