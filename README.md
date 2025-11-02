@@ -37,6 +37,10 @@ ConfigMaster is an enterprise-grade configuration management system featuring Di
 - **Knowledge Base**: Extensible information storage and retrieval
 - **Context Management**: Maintains conversation context and history
 - **Asynchronous Processing**: Non-blocking operations for better performance
+- **Permanent Deployment**: Robust LaunchAgent-based service deployment for macOS
+- **Error Recovery**: Automatic service restart and robust error handling
+- **Health Monitoring**: Comprehensive logging and service status tracking
+- **Process Management**: Automated startup script with environment control
 
 ### User Interfaces
 1. **Command Line Interface (CLI)**
@@ -171,7 +175,34 @@ class ConfigurationManager:
 ```
 
 #### Advanced Features
-1. **Version Control**
+
+#### Service Management
+1. **LaunchAgent Integration**
+   ```xml
+   <?xml version="1.0" encoding="UTF-8"?>
+   <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+   <plist version="1.0">
+   <dict>
+       <key>Label</key>
+       <string>com.dinesh.assistant</string>
+       <key>ProgramArguments</key>
+       <array>
+           <string>/usr/bin/bash</string>
+           <string>start_server.sh</string>
+       </array>
+       <key>RunAtLoad</key>
+       <true/>
+       <key>KeepAlive</key>
+       <true/>
+       <key>StandardErrorPath</key>
+       <string>/tmp/dinesh.assistant.err</string>
+       <key>StandardOutPath</key>
+       <string>/tmp/dinesh.assistant.out</string>
+   </dict>
+   </plist>
+   ```
+
+2. **Version Control**
    ```python
    async def rollback_config(self, name: str, version: str) -> None:
        previous = await self._storage.get_version(name, version)
@@ -883,18 +914,40 @@ The Model Context Protocol (MCP) is a sophisticated communication protocol that 
    - Project synchronization
    - Change tracking
 
-## Installation
+### Installation
 
+1. Clone the repository:
 ```bash
-# Clone the repository
 git clone https://github.com/ds25041974/python-config-manager.git
+cd python-config-manager
+```
 
-# Create and activate virtual environment
+2. Set up Python environment:
+```bash
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-
-# Install dependencies
 pip install -e ".[dev]"
+```
+
+3. Deploy service (macOS):
+```bash
+# Copy LaunchAgent configuration
+mkdir -p ~/Library/LaunchAgents
+cp com.dinesh.assistant.plist ~/Library/LaunchAgents/
+
+# Load the service
+launchctl load ~/Library/LaunchAgents/com.dinesh.assistant.plist
+
+# Verify server status at http://localhost:8000
+```
+
+4. View logs:
+```bash
+# Server output
+tail -f /tmp/dinesh.assistant.out
+
+# Error log
+tail -f /tmp/dinesh.assistant.err
 ```
 
 ## Technical Implementation

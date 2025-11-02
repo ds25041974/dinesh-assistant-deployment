@@ -156,15 +156,28 @@ launchctl load -w ~/Library/LaunchAgents/com.dinesh.assistant.plist
    - Verify permissions: `ls -l start_server.sh`
    - Check if port 8000 is available: `lsof -i :8000`
    - Verify the service status: `launchctl list | grep com.dinesh.assistant`
+   - Check LaunchAgent: `launchctl print gui/$UID/com.dinesh.assistant`
+   - Inspect startup script: `bash -x start_server.sh`
 
 2. **Web Interface Not Accessible**
    - Confirm the service is running: `launchctl list | grep com.dinesh.assistant`
    - Check if port 8000 is already in use: `lsof -i :8000`
    - Review error logs for connection issues
+   - Test network: `curl -v http://localhost:8000/health`
+   - Check firewall settings: `sudo pfctl -s rules`
 
 3. **Dependencies Issues**
    - Reactivate virtual environment: `source .venv/bin/activate`
    - Reinstall dependencies: `pip install -r requirements.txt`
+   - Verify Python path: `python -c "import sys; print(sys.path)"`
+   - Check package versions: `pip freeze`
+   - Reinstall in editable mode: `pip install -e .`
+
+4. **Process Management Issues**
+   - Check process tree: `pstree -p $(pgrep -f "uvicorn")`
+   - Monitor resource usage: `top -pid $(pgrep -f "uvicorn")`
+   - View open files: `lsof -p $(pgrep -f "uvicorn")`
+   - Check environment: `ps eww $(pgrep -f "uvicorn")`
 
 ## Security Considerations
 - The service runs on localhost (127.0.0.1) for security
@@ -172,9 +185,79 @@ launchctl load -w ~/Library/LaunchAgents/com.dinesh.assistant.plist
 - Environment variables and sensitive data are managed through the LaunchAgent plist
 
 ## Updating the Service
-1. Pull latest code changes
+
+### Manual Update
+1. Pull latest code changes: `git pull origin main`
 2. Update dependencies: `pip install -r requirements.txt`
-3. Restart the service using the commands above
+3. Restart the service:
+   ```bash
+   launchctl unload ~/Library/LaunchAgents/com.dinesh.assistant.plist
+   launchctl load -w ~/Library/LaunchAgents/com.dinesh.assistant.plist
+   ```
+
+### Automated Update Script
+Create `update_service.sh`:
+```bash
+#!/bin/bash
+set -e
+
+# Go to project directory
+cd "$(dirname "$0")"
+
+# Pull latest changes
+git pull origin main
+
+# Update dependencies
+source .venv/bin/activate
+pip install -r requirements.txt
+pip install -e .
+
+# Restart service
+launchctl unload ~/Library/LaunchAgents/com.dinesh.assistant.plist
+launchctl load -w ~/Library/LaunchAgents/com.dinesh.assistant.plist
+
+# Wait for service to start
+sleep 2
+
+# Check service health
+if curl -s http://localhost:8000/health > /dev/null; then
+    echo "Service updated and running successfully"
+else
+    echo "Service update failed - check logs"
+    exit 1
+fi
+```
+
+Make it executable:
+```bash
+chmod +x update_service.sh
+```
+
+## Performance Monitoring
+
+### Resource Usage
+```bash
+# CPU and Memory
+top -pid $(pgrep -f "uvicorn")
+
+# Disk I/O
+iotop -p $(pgrep -f "uvicorn")
+
+# Network Connections
+lsof -i -P -n | grep uvicorn
+```
+
+### Log Analysis
+```bash
+# Error frequency
+grep -c "ERROR" ~/Library/Logs/dinesh-assistant.error.log
+
+# Response times
+grep "INFO" ~/Library/Logs/dinesh-assistant.log | awk '/GET/ {print $0}'
+
+# Failed requests
+grep "ERROR" ~/Library/Logs/dinesh-assistant.error.log | sort | uniq -c
+```
 
 ## Directory Structure
 ```
