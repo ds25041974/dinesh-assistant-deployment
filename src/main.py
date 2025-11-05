@@ -1,14 +1,14 @@
-"""ConfigMaster: Advanced Python Configuration Management System
+"""Dinesh Assistant: Intelligent Project Development Helper
 
-This module serves as the main entry point for the ConfigMaster system, providing
-a robust interface for configuration management, templating, and internationalization.
+This module serves as the main entry point for the Dinesh Assistant system, providing
+a robust chatbot interface for project assistance, development guidance, and technical help.
 
-The system is designed to handle complex configuration scenarios with features like:
-- Type validation
-- Internationalization
-- Template management
-- Async operations
-- MCP server integration
+The system offers key features like:
+- Project documentation assistance
+- Development workflow guidance
+- Technical implementation support
+- Testing and quality assurance help
+- API and integration guidance
 
 For detailed usage instructions and examples, see the project README.md.
 """

@@ -5,10 +5,16 @@ import logging
 import os
 from dataclasses import asdict, dataclass, field
 from typing import Dict, Optional
+from pathlib import Path
+from dotenv import load_dotenv
 
 from src.config.i18n import Language
 from src.config.templates import TemplateManager
 from src.config.validation import LogLevel, ValidationError, validate_config
+
+# Load environment variables from .env file
+env_path = Path(__file__).parent.parent.parent / '.env'
+load_dotenv(dotenv_path=env_path)
 
 
 @dataclass
@@ -28,6 +34,20 @@ class AppConfig:
     cache_timeout: int = 3600  # 1 hour in seconds
     max_retries: int = 3
     _logger: Optional[logging.Logger] = field(default=None, repr=False)
+    
+    # OpenAI Configuration
+    openai_api_key: str = field(default_factory=lambda: os.getenv('OPENAI_API_KEY', ''))
+    environment: str = field(default_factory=lambda: os.getenv('ENVIRONMENT', 'development'))
+
+    @property
+    def openai_enabled(self) -> bool:
+        """Check if OpenAI integration is enabled."""
+        return bool(self.openai_api_key and self.openai_api_key != 'your-api-key-here')
+
+    @property
+    def is_development(self) -> bool:
+        """Check if running in development environment."""
+        return self.environment.lower() == 'development'
 
     def __post_init__(self):
         """Validate configuration after initialization."""

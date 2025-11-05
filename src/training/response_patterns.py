@@ -70,8 +70,12 @@ class ResponsePatternLibrary:
                     variables=["action", "explanation"],
                     examples=[
                         {
-                            "action": "create a virtual environment",
-                            "explanation": "Run 'python -m venv .venv' in your terminal",
+                            "action": "use the chatbot",
+                            "explanation": "Ask me about project features, technical details, or implementation guidance - I'll provide focused, relevant responses",
+                        },
+                        {
+                            "action": "get help with development",
+                            "explanation": "I can assist with code examples, best practices, and problem-solving guidance",
                         }
                     ],
                 )

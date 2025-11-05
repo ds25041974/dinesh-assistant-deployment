@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+        <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dinesh Assistant - ConfigMaster Project</title>
+    <title>Dinesh Assistant - ChatBot for Python & Github project</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
@@ -11,7 +11,7 @@
         <div class="chat-container">
             <div class="chat-header">
                 <h1>Dinesh Assistant</h1>
-                <p>Your ConfigMaster Project Guide</p>
+                <p>ChatBot for Python & Github project</p>
             </div>
             
             <div class="chat-messages" id="chat-messages">
@@ -19,7 +19,7 @@
             </div>
             
             <div class="typing-indicator" id="typing-indicator">
-                Dinesh Assistant is typing<span class="typing-dots"></span>
+                ChatBot is typing<span class="typing-dots"></span>
             </div>
             
             <div class="chat-input">
@@ -104,6 +104,18 @@
             }
         }
 
+        function formatCodeBlocks(text) {
+            // Replace code blocks wrapped in triple backticks
+            text = text.replace(/```([\s\S]*?)```/g, (match, code) => {
+                return `<div class="code-block">${code.trim()}</div>`;
+            });
+            
+            // Replace inline code wrapped in single backticks
+            text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+            
+            return text;
+        }
+
         function addMessage(text, type, references = []) {
             const messagesDiv = document.getElementById('chat-messages');
             const template = document.getElementById('message-template');
@@ -112,7 +124,7 @@
             messageDiv.classList.add(type === 'user' ? 'user-message' : 'bot-message');
             
             const contentDiv = messageDiv.querySelector('.message-content');
-            contentDiv.textContent = text;
+            contentDiv.innerHTML = formatCodeBlocks(text);
             
             const referencesDiv = messageDiv.querySelector('.message-references');
             if (references.length > 0) {

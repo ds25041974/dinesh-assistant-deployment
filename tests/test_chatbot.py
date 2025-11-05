@@ -14,9 +14,9 @@ def assistant():
 def test_greeting(assistant):
     """Test chatbot greeting."""
     greeting = assistant.greet()
-    assert "Dinesh Assistant" in greeting
-    assert "ConfigMaster" in greeting
-    assert "help you with" in greeting
+    assert isinstance(greeting, str)
+    assert "project assistant" in greeting.lower()
+    assert "help you with" in greeting.lower()
 
 
 @pytest.mark.asyncio
@@ -24,9 +24,10 @@ async def test_config_response(assistant):
     """Test configuration-related responses."""
     response = await assistant.respond("how do I configure the project?")
     assert isinstance(response, Response)
-    assert "virtual environment" in response.text.lower()
+    assert "project" in response.text.lower()
+    assert "development" in response.text.lower()
     assert response.confidence > 0.7
-    assert "README.md" in response.references
+    assert any(ref in response.references for ref in ["Project Guide", "README.md"])
 
 
 @pytest.mark.asyncio
@@ -88,5 +89,7 @@ async def test_context_tracking(assistant):
 
     assert isinstance(response1, Response)
     assert isinstance(response2, Response)
-    assert "ConfigMaster" in response1.text
-    assert response2.confidence > 0
+    assert "project" in response1.text.lower()
+    assert "features" in response1.text.lower()
+    assert response1.confidence > 0.7
+    assert response2.confidence > 0.7

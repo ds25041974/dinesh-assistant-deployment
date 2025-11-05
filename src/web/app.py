@@ -12,12 +12,12 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 
-from ..chatbot import DineshAssistant
+from src.chatbot import DineshAssistant
 
 # Initialize FastAPI app with additional configuration
 app = FastAPI(
     title="Dinesh Assistant",
-    description="AI-powered chatbot for ConfigMaster project",
+    description="ChatBot for Python & Github project - Your AI-powered project assistant",
     version="1.0.0",
     docs_url="/docs",  # Enable Swagger UI
     redoc_url="/redoc",  # Enable ReDoc
@@ -72,7 +72,14 @@ async def home(request: Request) -> HTMLResponse:
 @app.get("/api/greet")
 async def greet() -> Dict:
     """Get initial greeting."""
-    return {"text": assistant.greet(), "confidence": 1.0, "references": []}
+    return {
+        "text": "Hello! 👋 I'm your project assistant. Ask me about:\n"
+        "• Project features and capabilities\n"
+        "• Implementation details\n"
+        "• Documentation and guides",
+        "confidence": 1.0,
+        "references": [],
+    }
 
 
 @app.get("/health")
@@ -89,9 +96,14 @@ async def health_check() -> Dict:
 async def chat(request: ChatRequest) -> Dict:
     """Handle chat messages."""
     try:
-        # Get response from assistant
+        query = request.query.lower().strip()
+        print(f"Processing query: {query}")  # Debug log
+
+        # Get response from assistant for all queries
+        print("Using assistant for response")  # Debug log
         response = await assistant.respond(request.query)
 
+        print(f"Response received: {response.text[:100]}...")  # Debug log
         return {
             "text": response.text,
             "confidence": response.confidence,
@@ -115,16 +127,33 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
 
 def start() -> None:
     """Start the web UI server with robust configuration for permanent access."""
+    import socket
+    import time
+
     import uvicorn
-    
-    print("\n🤖 Dinesh Assistant is now running!")
-    print("🌐 Access the web interface at: http://localhost:8000")
+
+    def find_free_port(start_port: int = 8000) -> int:
+        """Find a free port starting from the given port."""
+        port = start_port
+        max_attempts = 100
+
+        for _ in range(max_attempts):
+            try:
+                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                    s.bind(("127.0.0.1", port))
+                    s.close()
+                    time.sleep(0.1)  # Give OS time to fully release the port
+                    return port
+            except OSError:
+                port += 1
+
+        raise RuntimeError(
+            "Could not find a free port after {} attempts".format(max_attempts)
+        )
+
+    port = find_free_port(8000)
+    print(f"\n🤖 Dinesh Assistant is now running!")
+    print(f"🌐 Access the web interface at: http://localhost:{port}")
     print("⌨️  Press Ctrl+C to stop the server when needed\n")
 
-    uvicorn.run(
-        app,
-        host="127.0.0.1",
-        port=8000,
-        log_level="debug",
-        reload=False
-    )
+    uvicorn.run(app, host="127.0.0.1", port=port, log_level="debug", reload=True)

@@ -14,10 +14,10 @@ def test_knowledge_base_initialization():
     kb = KnowledgeBase()
 
     # Check Python knowledge
-    python_venv = kb.get_knowledge(Domain.PYTHON, "virtual_environments")
-    assert python_venv is not None
-    assert python_venv.topic == "Virtual Environments"
-    assert len(python_venv.examples) > 0
+    project_setup = kb.get_knowledge(Domain.PYTHON, "project_setup")
+    assert project_setup is not None
+    assert project_setup.topic == "Project Setup"
+    assert len(project_setup.examples) > 0
 
     # Check GitHub knowledge
     github_actions = kb.get_knowledge(Domain.GITHUB, "actions")
@@ -32,8 +32,9 @@ def test_response_generation():
     manager = TrainingManager(config)
 
     # Test Python-related query
-    python_response = manager.process_query("How do I create a virtual environment?")
-    assert "virtual environment" in python_response["response"].lower()
+    python_response = manager.process_query("How do I set up the project?")
+    assert "project" in python_response["response"].lower()
+    assert "setup" in python_response["response"].lower()
     assert len(python_response["references"]) > 0
 
     # Test GitHub-related query
@@ -84,9 +85,9 @@ def test_knowledge_search():
     kb = KnowledgeBase()
 
     # Test exact match
-    results = kb.search_knowledge("virtual environment")
-    assert len(results) > 0
-    assert any(r.topic == "Virtual Environments" for r in results)
+    results = kb.search_knowledge("project setup")
+    assert len(results) >= 1
+    assert any(r.topic == "Project Setup" for r in results)
 
     # Test partial match
     results = kb.search_knowledge("github")

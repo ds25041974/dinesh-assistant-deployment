@@ -1,0 +1,17 @@
+[Unit]
+Description=Dinesh Assistant Chatbot
+After=network.target
+
+[Service]
+Type=simple
+User=dineshsrivastava
+WorkingDirectory=/Users/dineshsrivastava/python-test/Github Projectr
+Environment=PYTHONPATH=/Users/dineshsrivastava/python-test/Github Projectr
+ExecStart=/usr/bin/python3 src/web/app.py
+Restart=always
+RestartSec=10
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+[Install]
+WantedBy=multi-user.target
